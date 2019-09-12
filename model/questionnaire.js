@@ -10,7 +10,7 @@ class QuestionnaireModel {
    * @returns {Promise.<*>}
    */
   static async getUserAnswers (user_id) {
-    return Questionnaire.findAll({ where: { user_id } })
+    return Questionnaire.findOne({ where: { user_id } })
   }
 
   /**
@@ -19,6 +19,6 @@ class QuestionnaireModel {
    * @param {*} list
    */
   static async postUserAnswers (list) {
-    return Questionnaire.bulkCreate(list, { updateOnDuplicate: true })
+    return Questionnaire.upsert(list)
   }
 }

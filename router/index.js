@@ -5,6 +5,7 @@ const NewsController = require('../controller/news');
 const PolicyController = require('../controller/policy');
 const ReportController = require('../controller/report');
 const LyricalController = require('../controller/lyrical');
+const QuestionnaireController = require('../controller/queationnaire');
 const router = new Router({prefix: '/api'});
 
 router
@@ -14,6 +15,10 @@ router
 
     //用户信息
     .post('/user/get', UserController.get) // 获取用户信息
+
+    // 用户问卷调查
+    .get('/user/getAnswers', QuestionnaireController.getUserAnswers)
+    .post('/user/postAnswers', QuestionnaireController.postUserAnswers)
 
     //资讯类
     .get('/pub/getNews', NewsController.get) //获取新闻
