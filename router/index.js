@@ -17,8 +17,8 @@ router
     .post('/user/get', UserController.get) // 获取用户信息
 
     // 用户问卷调查
-    // .get('/user/getAnswers', QuestionnaireController.getUserAnswers)
-    // .post('/user/postAnswers', QuestionnaireController.postUserAnswers)
+    .get('/user/getAnswers', QuestionnaireController.getUserAnswers)
+    .post('/user/postAnswers', QuestionnaireController.postUserAnswers)
 
     //资讯类
     .get('/pub/getNews', NewsController.get) //获取新闻

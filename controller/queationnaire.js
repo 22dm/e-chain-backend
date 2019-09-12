@@ -27,3 +27,5 @@ class QuestionnaireController {
       .catch(() => ctx.body = Response.failed('提交用户问卷答案列表失败'))
   }
 }
+
+module.exports = QuestionnaireController
