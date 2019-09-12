@@ -41,7 +41,28 @@ class PortfolioModel {
         var portfolio_history;
         var tag;
         var time;
+        var items;
+        var item;
+        var type;
+        var portfolioItems;
         while(id<=len){
+            items="";
+            portfolioItems=PortfolioItem.findAll({where:{portfolio_id:portfolioId}});
+            for(let portfolioItem in portfolioItems){
+                item=Item.findOne({where:{id:portfolioItem.item_id}});
+                if(item.type===0) type="股票";
+                else type="基金";
+                items.push(
+                    {
+                        type:item.type,
+                        name:item.name,
+                        code:item.code,
+                        buy_price:portfolioItem.buy_price.toFixed(2)+"",
+                        amount:portfolioItem.amount.toFixed(2)+"",
+                        sum:(portfolioItem.buy_price*portfolioItem.amount).toFixed(2)+""
+                    }
+                )
+            }
             portfolio_history=PortfolioHistory.findOne({where:{id}});
             portfolioId=portfolio_history.portfolio_id;
             portfolio=Portfolio.findOne({where:{id:portfolioId}} );
@@ -57,7 +78,7 @@ class PortfolioModel {
                 name:"组合"+portfolioId,
                 tag:tag,
                 time:time,
-                items:PortfolioItem.findAll({where:{portfolio_id:portfolioId}})
+                items:items
             });
             id=id+1;
         }
