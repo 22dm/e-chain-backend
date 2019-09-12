@@ -31,6 +31,12 @@ class ReportController {
             .then(data => ctx.body = Response.success(data))
             .catch(() => ctx.body = Response.failed('获取推荐失败'));
     }
+    static async getPortfolio(ctx) {
+        const id = ctx.request.query;
+        await PortfolioModel.getPortfolio(id)
+            .then(data => ctx.body = Response.success(data))
+            .catch(() => ctx.body = Response.failed('获取组合失败'));
+    }
 }
 
 module.exports = PortfolioController;
