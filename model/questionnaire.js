@@ -1,24 +1,24 @@
-const db = require('../config/db');
-const Questionnaire = db.import('../schema/questionnaire.js');
+const db = require('../config/db')
+const Questionnaire = db.import('../schema/questionnaire.js')
 
-Questionnaire.sync();
+Questionnaire.sync()
 
 class QuestionnaireModel {
   /**
    * 查询用户的问卷答案
-   * @param userid
+   * @param user_id
    * @returns {Promise.<*>}
    */
-  static async getUserAnswers(user_id){
-    return Questionnaire.findAll({where: {user_id}});
+  static async getUserAnswers (user_id) {
+    return Questionnaire.findAll({ where: { user_id } })
   }
 
   /**
    * 提交用户的问卷答案
    * 如果问卷已有答案，则update；否则insert
-   * @param {*} list 
+   * @param {*} list
    */
-  static async postUserAnswers(list){
-    return Questionnaire.bulkCreate(list, {updateOnDuplicate:true});
+  static async postUserAnswers (list) {
+    return Questionnaire.bulkCreate(list, { updateOnDuplicate: true })
   }
 }
