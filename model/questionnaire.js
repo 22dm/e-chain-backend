@@ -22,3 +22,5 @@ class QuestionnaireModel {
     return Questionnaire.upsert(list)
   }
 }
+
+module.exports = QuestionnaireModel
