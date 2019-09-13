@@ -17,7 +17,7 @@ class ItemController {
     }
     static async getRecommend(ctx) {
 
-        await ItemlModel.getRecommend()
+        await ItemModel.getRecommend()
             .then(data => ctx.body = Response.success(data))
             .catch(() => ctx.body = Response.failed('获取推荐失败'));
     }

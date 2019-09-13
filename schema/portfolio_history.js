@@ -1,7 +1,7 @@
 module.exports = (sequelize, DataTypes) =>
     sequelize.define('portfolio_history', {
         id: {
-            type: DataTypes.STRING,
+            type: DataTypes.INTEGER,
             allowNull: false,
             primaryKey: true,
             autoIncrement: true
