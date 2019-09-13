@@ -20,11 +20,11 @@ module.exports = (sequelize, DataTypes) =>
             allowNull: false
         },
         now_price: {
-            type: DataTypes.SOMITEM_DATATYPE_DOUBLE,
+            type: DataTypes.DOUBLE,
             allowNull: false
         },
         twenty_days_ago_price: {
-            type: DataTypes.SOMITEM_DATATYPE_DOUBLE,
+            type: DataTypes.DOUBLE,
             allowNull: false
         }
     }, {

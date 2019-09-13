@@ -4,6 +4,7 @@ module.exports = (sequelize, DataTypes) =>
             type: DataTypes.STRING,
             allowNull: false,
             primaryKey: true,
+            autoIncrement: true
         },
         //0代表买入，1代表卖出
         type: {

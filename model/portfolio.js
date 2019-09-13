@@ -11,8 +11,8 @@ PortfolioHistory.sync();
 class PortfolioModel {
     //买入
     static  async buy( items,userId ){
-        var myDate = new Date();
-        Portfolio.create({id,user_id:userId,buy_time:myDate.getTime()});
+        var myDate = this.getTime();
+        Portfolio.create({id,user_id:userId,buy_time:myDate});
         const portfolioId=Portfolio.getLength()-1;
         PortfolioHistory.create({id,type:0,portfolio_id: portfolioId});
         for(let item in items){
@@ -22,6 +22,8 @@ class PortfolioModel {
     }
     //卖出
     static  async sell(id){
+        var myDate = this.getTime();
+        Portfolio.findOne({where:{id:id}}).sell_time=myDate;
         return PortfolioHistory.create({id,type:1,portfolio_id: id});
 
     }
@@ -41,7 +43,28 @@ class PortfolioModel {
         var portfolio_history;
         var tag;
         var time;
+        var items;
+        var item;
+        var type;
+        var portfolioItems;
         while(id<=len){
+            items="";
+            portfolioItems=PortfolioItem.findAll({where:{portfolio_id:portfolioId}});
+            for(let portfolioItem in portfolioItems){
+                item=Item.findOne({where:{id:portfolioItem.item_id}});
+                if(item.type===0) type="股票";
+                else type="基金";
+                items.push(
+                    {
+                        type:item.type,
+                        name:item.name,
+                        code:item.code,
+                        buy_price:portfolioItem.buy_price.toFixed(2)+"",
+                        amount:portfolioItem.amount.toFixed(2)+"",
+                        sum:(portfolioItem.buy_price*portfolioItem.amount).toFixed(2)+""
+                    }
+                )
+            }
             portfolio_history=PortfolioHistory.findOne({where:{id}});
             portfolioId=portfolio_history.portfolio_id;
             portfolio=Portfolio.findOne({where:{id:portfolioId}} );
@@ -57,10 +80,12 @@ class PortfolioModel {
                 name:"组合"+portfolioId,
                 tag:tag,
                 time:time,
-                items:PortfolioItem.findAll({where:{portfolio_id:portfolioId}})
+                items:items
             });
             id=id+1;
         }
+        console(history);
+        return history;
     }
 
     static async getRecommend(){
@@ -68,16 +93,37 @@ class PortfolioModel {
         var recommendPortfolio;
         var portfolioItems;
         var twenty_days_price=0;
+        var items;
+        var item;
+        var type;
         for(let portfolio in portfolios){
-            portfolioItems=PortfolioItem.findAll({where:{portfolio_id:portfolio.id}});
-            for(let portfolioItem in portfolioItems){
-                twenty_days_price=portfolioItem.amount*Item.findOne({where:{id:portfolioItem.item_id}}).twenty_days_ago_price+twenty_days_price;
+            if(portfolio.sell_time!==null) {
+                twenty_days_price = 0;
+                portfolioItems = PortfolioItem.findAll({where: {portfolio_id: portfolio.id}});
+                for (let portfolioItem in portfolioItems) {
+                    item = Item.findOne({where: {id: portfolioItem.item_id}});
+                    if (item.type === 0) type = "股票";
+                    else type = "基金";
+                    items.push(
+                        {
+                            type: item.type,
+                            name: item.name,
+                            code: item.code,
+                            buy_price: portfolioItem.buy_price.toFixed(2) + "",
+                            amount: portfolioItem.amount.toFixed(2) + "",
+                            sum: (portfolioItem.buy_price * portfolioItem.amount).toFixed(2) + ""
+                        }
+                    )
+                }
+                for (let portfolioItem in portfolioItems) {
+                    twenty_days_price = portfolioItem.amount * Item.findOne({where: {id: portfolioItem.item_id}}).twenty_days_ago_price + twenty_days_price;
+                }
+                recommendPortfolio.push({
+                    name: "组合" + portfolio.id,
+                    items: items,
+                    twenty_days_ago_price: twenty_days_price
+                });
             }
-            recommendPortfolio.push({
-                name:"组合"+portfolio.id,
-                items:portfolioItems,
-                twenty_days_ago_price:twenty_days_price
-            });
         }
         return recommendPortfolio;
     }
@@ -112,6 +158,29 @@ class PortfolioModel {
             now_amount_price:now_amount_price.toFixed(2)+"",
             earnings:(now_amount_price-buy_price).toFixed(2)+""
         }
+    }
+
+    static getTime(){
+
+        var now = new Date();
+        var yy = now.getFullYear();      //年
+        var mm = now.getMonth() + 1;     //月
+        var dd = now.getDate();          //日
+        var hh = now.getHours();         //时
+        var ii = now.getMinutes();       //分
+        var ss = now.getSeconds();       //秒
+        var clock = yy + "-";
+        if(mm < 10) clock += "0";
+        clock += mm + "-";
+        if(dd < 10) clock += "0";
+        clock += dd + " ";
+        if(hh < 10) clock += "0";
+        clock += hh + ":";
+        if (ii < 10) clock += '0';
+        clock += ii + ":";
+        if (ss < 10) clock += '0';
+        clock += ss;
+        return clock;
     }
 }
 

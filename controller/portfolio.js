@@ -1,7 +1,7 @@
 const PortfolioModel = require('../model/portfolio');
 const Response = require('../util/response');
 
-class ReportController {
+class PortfolioController {
 
     static async buy(ctx) {
         const {items,userId} = ctx.request.query;
