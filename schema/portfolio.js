@@ -15,12 +15,12 @@ module.exports = (sequelize, DataTypes) =>
             allowNull: true
         },
         buy_time: {
-            type: DataTypes.DATE,
+            type: DataTypes.STRING,
             allowNull: false
         },
 
         sell_time: {
-            type: DataTypes.DATE,
+            type: DataTypes.STRING,
             allowNull: true
         },
 

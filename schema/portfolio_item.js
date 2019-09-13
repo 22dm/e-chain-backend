@@ -11,15 +11,15 @@ module.exports = (sequelize, DataTypes) =>
             allowNull: false
         },
         buy_price: {
-            type: DataTypes.SOMITEM_DATATYPE_DOUBLE,
+            type: DataTypes.DOUBLE,
             allowNull: false
         },
         sell_price: {
-            type: DataTypes.SOMITEM_DATATYPE_DOUBLE,
+            type: DataTypes.DOUBLE,
             allowNull: true
         },
         amount: {
-            type: DataTypes.SOMITEM_DATATYPE_DOUBLE,
+            type: DataTypes.DOUBLE,
             allowNull: false
         },
         //if 0,未卖出;if 1,已卖出
