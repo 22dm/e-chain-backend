@@ -30,7 +30,7 @@ class StockModel {
     }
 
     for (let i = 1; i <= 5; i++) {
-      res.main.push({ time: stock['main' + i + 'name'], value: stock['main' + i + 'value'] });
+      res.main.push({ name: stock['main' + i + 'name'], income: stock['main' + i + 'value'] });
     }
 
     for (let i = 1; i <= 12; i++) {
