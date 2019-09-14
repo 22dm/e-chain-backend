@@ -89,19 +89,24 @@ class PortfolioModel {
     }
 
     static async getRecommend(){
-        var portfolios=Portfolio.findAll({where:{recommend:1}});
-        var recommendPortfolio;
-        var portfolioItems;
-        var twenty_days_price=0;
-        var items;
-        var item;
-        var type;
+        const portfolios= await Portfolio.findAll({where:{recommend:1}});
+        console.log(portfolios);
+        let recommendPortfolio;
+        let twenty_days_price=0;
+        let items;
+        let item;
+        let type;
         for(let portfolio in portfolios){
-            if(portfolio.sell_time!==null) {
                 twenty_days_price = 0;
-                portfolioItems = PortfolioItem.findAll({where: {portfolio_id: portfolio.id}});
+                console.log("sss");
+                console.log(portfolios.values());
+                console.log(portfolio);
+                const portfolioItems = await PortfolioItem.findAll({where: {portfolio_id: portfolio.id}});
+                console.log("tt2");
                 for (let portfolioItem in portfolioItems) {
-                    item = Item.findOne({where: {id: portfolioItem.item_id}});
+                    console.log("sss");
+                    item = await Item.findOne({where: {id: portfolioItem.item_id}});
+                    console.log("ttt");
                     if (item.type === 0) type = "股票";
                     else type = "基金";
                     items.push(
@@ -123,7 +128,7 @@ class PortfolioModel {
                     items: items,
                     twenty_days_ago_price: twenty_days_price
                 });
-            }
+
         }
         return recommendPortfolio;
     }

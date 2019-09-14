@@ -13,7 +13,7 @@ class AnnouncementController {
         const limit = parseInt(num);
 
         await AnnouncementModel.get(offset, limit)
-            .then(data => ctx.body = Response.success(data))
+            .then(data => {ctx.body = Response.success(data);console.log(data)})
             .catch(() => ctx.body = Response.failed('获取公告列表失败'));
     }
 }

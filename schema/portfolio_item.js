@@ -22,7 +22,6 @@ module.exports = (sequelize, DataTypes) =>
             type: DataTypes.DOUBLE,
             allowNull: false
         },
-        //if 0,未卖出;if 1,已卖出
         portfolio_id: {
             type: DataTypes.INTEGER,
             allowNull: false
