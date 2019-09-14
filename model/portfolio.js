@@ -89,47 +89,32 @@ class PortfolioModel {
     }
 
     static async getRecommend() {
-        return await this.getRecommend_aa();
-    }
-
-    static async getRecommend_aa() {
         const portfolios = await Portfolio.findAll({ where: { recommend: 1 } });
         let recommendPortfolio = [];
-        let twenty_days_price = 0;
-        let items = [];
-        let item;
-        let type;
-        for(let i = 0; i < portfolios.length; i++){
-            twenty_days_price = 0;
+        for (let i = 0; i < portfolios.length; i++) {
             const portfolio = portfolios[i].dataValues;
-
             const portfolioItems = await PortfolioItem.findAll({ where: { portfolio_id: portfolio.id } });
-            for(let j = 0; j < portfolioItems.length; j++){
-                const portfolioItem = portfolioItems[j].dataValues;
 
-                item = Item.findOne({ where: { id: portfolioItem.item_id } });
-                if (item.type === 0) type = "股票";
-                else type = "基金";
-                items.push(
-                    {
-                        type: item.type,
-                        name: item.name,
-                        code: item.code,
-                        buy_price: portfolioItem.buy_price.toFixed(2) + "",
-                        amount: portfolioItem.amount.toFixed(2) + "",
-                        sum: (portfolioItem.buy_price * portfolioItem.amount).toFixed(2) + ""
-                    }
-                )
-            }
-            for(let j = 0; j < portfolioItems.length; j++){
+            let items = [];
+            let twenty_days_price = 0;
+            for (let j = 0; j < portfolioItems.length; j++) {
                 const portfolioItem = portfolioItems[j].dataValues;
-                twenty_days_price =  portfolioItem.amount * await Item.findOne({ where: { id: portfolioItem.item_id } }).twenty_days_ago_price + twenty_days_price;
+                const item = await Item.findOne({ where: { id: portfolioItem.item_id } });
+                items.push({
+                    type: item.type === 0 ? "股票" : "基金",
+                    name: item.name,
+                    code: item.code,
+                    buy_price: portfolioItem.buy_price.toFixed(2) + "",
+                    amount: portfolioItem.amount.toFixed(2) + "",
+                    sum: (portfolioItem.buy_price * portfolioItem.amount).toFixed(2) + ""
+                })
+                twenty_days_price += portfolioItem.amount * await Item.findOne({ where: { id: portfolioItem.item_id } }).twenty_days_ago_price;
             }
 
             recommendPortfolio.push({
                 name: "组合" + portfolio.id,
-                items: items,
-                twenty_days_ago_price: twenty_days_price
+                items,
+                twenty_days_price
             });
         }
         return recommendPortfolio;
