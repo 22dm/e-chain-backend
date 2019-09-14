@@ -20,7 +20,7 @@ app.use(bodyparser({
 }));
 
 app.use(cors({
-    origin:  'http://localhost',
+    origin:  '*',
     // exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
     maxAge: 3600,
     credentials: true,
