@@ -5,6 +5,7 @@ const NewsController = require('../controller/news');
 const PolicyController = require('../controller/policy');
 const ReportController = require('../controller/report');
 const LyricalController = require('../controller/lyrical');
+const StockController = require('../controller/stock');
 const QuestionnaireController = require('../controller/queationnaire');
 const ItemController=require('../controller/item');
 const PortfolioController=require('../controller/portfolio');
@@ -28,6 +29,9 @@ router
     .get('/pub/getAnnouncement', AnnouncementController.get) //获取公告
     .get('/pub/getPolicy', PolicyController.get) //获取政策
     .get('/pub/getReport', ReportController.get)//获取研报
+
+    //股票
+    .get('/pub/getStockInfo', StockController.get)
 
     //投资类
     .get('/pub/updatePrice',ItemController.updatePrice)//更新项目
