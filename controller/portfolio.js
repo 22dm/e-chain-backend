@@ -23,11 +23,11 @@ class PortfolioController {
             .catch(() => ctx.body = Response.failed('推荐失败'));
     }
     static async getHistory(ctx) {
-        const {user_id}=ctx.request.query;
+        const user_id=JSON.parse(ctx.request.query.params).user_id;
         console.log(user_id);
         await PortfolioModel.getHistory(user_id)
             .then(data => ctx.body = Response.success(data))
-           // .catch(() => ctx.body = Response.failed('获取历史记录失败'));
+            .catch(() => ctx.body = Response.failed('获取历史记录失败'));
     }
     static async getRecommend(ctx) {
         await PortfolioModel.getRecommend()

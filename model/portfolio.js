@@ -28,6 +28,7 @@ class PortfolioModel {
         console.log(id);
         let myDate = this.getTime();
         Portfolio.update({sell_time : myDate}, {where: {id: id}});
+        Portfolio.update({sell_price : 0}, {where: {portfolio_id: id}})
         PortfolioHistory.create({ type: 1, portfolio_id: id });
         return 0;
 
@@ -82,7 +83,7 @@ class PortfolioModel {
                     time = portfolio.sell_time;
                 }
                 history.push({
-                    name: "组合" + portfolio.id,
+                    name: portfolio.id+"",
                     tag: tag,
                     time: time.toISOString().replace(/T/, ' ').replace(/\..+/, ''),
                     items: items
@@ -90,7 +91,6 @@ class PortfolioModel {
             }
 
         }
-
         return history;
     }
 
