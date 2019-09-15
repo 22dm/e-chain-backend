@@ -12,75 +12,94 @@ class PortfolioModel {
     //买入
     static async buy(items, userId) {
         let myDate = this.getTime();
-        Portfolio.create({ id, user_id: userId, buy_time: myDate });
-        const portfolioId = Portfolio.getLength() - 1;
-        PortfolioHistory.create({ id, type: 0, portfolio_id: portfolioId });
+        Portfolio.create({user_id: userId, buy_time: myDate,recommend:0});
+        const portfolios= await Portfolio.findAll();
+        const id=portfolios[portfolios.length-1].id+1;
+        PortfolioHistory.create({  type: 0, portfolio_id: id });
         for (let i=0;i<items.length;i++) {
-            const item=items[i].dataValues;
-            PortfolioItem.create({ id, item_id: item.id, buy_price: item.price, amount: item.amount, portfolio_id: portfolioId });
+            const item=items[i];
+            const item_id=await Item.findOne({where:{name:item.name}});
+            await PortfolioItem.create({ item_id: item_id.id, buy_price: item.price, amount: item.amount, portfolio_id:id });
         }
         return 0;
     }
     //卖出
     static async sell(id) {
+        console.log(id);
         let myDate = this.getTime();
-        Portfolio.findOne({ where: { id: id } }).sell_time = myDate;
-        return PortfolioHistory.create({ id, type: 1, portfolio_id: id });
+        Portfolio.update({sell_time : myDate}, {where: {id: id}});
+        PortfolioHistory.create({ type: 1, portfolio_id: id });
+        return 0;
 
     }
 
     //推荐
     static async recommend(id) {
-        return Portfolio.findOne({ where: { id: id } }).recommend = 1;
+        Portfolio.update({recommend : 1}, {where: {id: id}});
+        return 0;
     }
 
     //获得历史记录，按时间降序
-    static async getHistory() {
+    static async getHistory(user_id) {
         let history=[];
         const portfolioHistory = await PortfolioHistory.findAll();
-        let len=portfolioHistory.length-1;
-        let id = 1;
-        let portfolioId;
+        let len=portfolioHistory.length;
         let tag;
         let time;
         let type;
-        while (id <= len) {
-            let items=[];
-            const portfolioItems = await PortfolioItem.findAll({ where: { portfolio_id: id } });
-            for (let j = 0; j < portfolioItems.length; j++) {
-                const portfolioItem = portfolioItems[j].dataValues;
-                const item = await Item.findOne({ where: { id: portfolioItem.item_id } });
-                if (item.type === 0) {type = "股票";}
-                else {type = "基金";}
-                items.push(
-                    {
-                        type: type,
-                        name: item.name,
-                        code: item.code,
-                        buy_price: portfolioItem.buy_price.toFixed(2) + "",
-                        amount: portfolioItem.amount.toFixed(2) + "",
-                        sum: (portfolioItem.buy_price * portfolioItem.amount).toFixed(2) + ""
+        for(let id=portfolioHistory[len-1].id;id>1;id--) {
+            const portfolio_history = await PortfolioHistory.findOne({ where: { id:id  } });
+            console.log("++++")
+            console.log(portfolio_history);
+            console.log("++++")
+            const portfolio =await Portfolio.findOne({where: { id: portfolio_history.portfolio_id}});
+            console.log(portfolio.user_id);
+            if(portfolio.user_id===user_id) {
+                console.log(portfolio.id);
+                let items = [];
+                const portfolioItems = await PortfolioItem.findAll({where: {portfolio_id: portfolio.id}});
+                for (let j = 0; j < portfolioItems.length; j++) {
+                    const portfolioItem = portfolioItems[j].dataValues;
+                    console.log(portfolioItem);
+                    const item = await Item.findOne({where: {id: portfolioItem.item_id}});
+                    console.log("---------------------");
+                    console.log(item);
+                    console.log("---------------------");
+                    if (item.type === 0) {
+                        type = "股票";
+                    } else {
+                        type = "基金";
                     }
-                )
+                    items.push(
+                        {
+                            type: type,
+                            name: item.name,
+                            code: item.code,
+                            buy_price: portfolioItem.buy_price.toFixed(2) + "",
+                            amount: portfolioItem.amount.toFixed(2) + "",
+                            sum: (portfolioItem.buy_price * portfolioItem.amount).toFixed(2) + ""
+                        }
+                    )
+                }
+                console.log("-----------");
+                console.log("portfolio.buy_time ="+portfolio.buy_time);
+                console.log("portfolio.sell_time="+portfolio.sell_time);
+                console.log("-----------");
+                if (portfolio_history.type === 0) {
+                    tag = "买入";
+                    time = portfolio.buy_time;
+                } else {
+                    tag = "卖出";
+                    time = portfolio.sell_time;
+                }
+                history.push({
+                    name: "组合" + portfolio.id,
+                    tag: tag,
+                    time: time.toISOString().replace(/T/, ' ').replace(/\..+/, ''),
+                    items: items
+                });
+                console.log(history);
             }
-            const portfolio_history = await PortfolioHistory.findOne({ where: { id:id } });
-            portfolioId = portfolio_history.portfolio_id;
-            const portfolio =await Portfolio.findOne({ where: { id: portfolioId } });
-            if (portfolio_history.type === 0) {
-                tag = "买入";
-                time = portfolio.buy_time;
-            }
-            else {
-                tag = "卖出";
-                time = portfolio.sell_time;
-            }
-            history.push({
-                name: "组合" + portfolioId,
-                tag: tag,
-                time: time,
-                items: items
-            });
-            id = id + 1;
 
         }
 
@@ -88,6 +107,8 @@ class PortfolioModel {
     }
 
     static async getRecommend() {
+        // const portfolioAll=await Portfolio.findAll();
+        // const id=portfolioAll[portfolioAll.length].dataValues.id;
         const portfolios = await Portfolio.findAll({ where: { recommend: 1 } });
         let recommendPortfolio = [];
         for (let i = 0; i < portfolios.length; i++) {
@@ -150,9 +171,9 @@ class PortfolioModel {
                 }
 
                 portfolioReturn.push({
-                    name: "组合" + portfolio.id,
+                    name: portfolio.id,
                     items: portfolios,
-                    time: portfolio.buy_time + "",
+                    time: portfolio.buy_time.toISOString().replace(/T/,' ').replace(/\..+/,''),
                     buy_price: buy_price.toFixed(2) + "",
                     now_amount_price: now_amount_price.toFixed(2) + "",
                     earnings: (now_amount_price - buy_price).toFixed(2) + ""

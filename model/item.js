@@ -12,6 +12,7 @@ class ItemModel {
     //获取推荐
     static async getRecommend() {
         const stocks_raw = await Item.findAll({where: {type: 0}});
+        console.log("shabi");
         let stocks=[];
         for (let i=0;i<stocks_raw.length;i++) {
             const stock=stocks_raw[i].dataValues;
