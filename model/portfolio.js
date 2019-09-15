@@ -94,9 +94,9 @@ class PortfolioModel {
         return history;
     }
 
+    
+    //获取推荐
     static async getRecommend() {
-        // const portfolioAll=await Portfolio.findAll();
-        // const id=portfolioAll[portfolioAll.length].dataValues.id;
         const portfolios = await Portfolio.findAll({ where: { recommend: 1 } });
         let recommendPortfolio = [];
         for (let i = 0; i < portfolios.length; i++) {
@@ -120,7 +120,7 @@ class PortfolioModel {
             }
 
             recommendPortfolio.push({
-                name: "组合" + portfolio.id,
+                name: "" + portfolio.id,
                 items,
                 twenty_days_price
             });
@@ -128,6 +128,8 @@ class PortfolioModel {
         return recommendPortfolio;
     }
 
+
+    //我的持仓
     static async getPortfolio(id) {
         const portfolioList =await Portfolio.findAll({ where: { user_id: id } });
         let portfolioReturn=[];
