@@ -47,24 +47,17 @@ class PortfolioModel {
         let tag;
         let time;
         let type;
-        for(let id=portfolioHistory[len-1].id;id>1;id--) {
+        let start=0;
+        for(let start=0;start<len;start++) {
+            let id=portfolioHistory[len-1-start].id;
             const portfolio_history = await PortfolioHistory.findOne({ where: { id:id  } });
-            console.log("++++")
-            console.log(portfolio_history);
-            console.log("++++")
             const portfolio =await Portfolio.findOne({where: { id: portfolio_history.portfolio_id}});
-            console.log(portfolio.user_id);
             if(portfolio.user_id===user_id) {
-                console.log(portfolio.id);
                 let items = [];
                 const portfolioItems = await PortfolioItem.findAll({where: {portfolio_id: portfolio.id}});
                 for (let j = 0; j < portfolioItems.length; j++) {
                     const portfolioItem = portfolioItems[j].dataValues;
-                    console.log(portfolioItem);
                     const item = await Item.findOne({where: {id: portfolioItem.item_id}});
-                    console.log("---------------------");
-                    console.log(item);
-                    console.log("---------------------");
                     if (item.type === 0) {
                         type = "股票";
                     } else {
@@ -81,10 +74,6 @@ class PortfolioModel {
                         }
                     )
                 }
-                console.log("-----------");
-                console.log("portfolio.buy_time ="+portfolio.buy_time);
-                console.log("portfolio.sell_time="+portfolio.sell_time);
-                console.log("-----------");
                 if (portfolio_history.type === 0) {
                     tag = "买入";
                     time = portfolio.buy_time;
@@ -98,7 +87,6 @@ class PortfolioModel {
                     time: time.toISOString().replace(/T/, ' ').replace(/\..+/, ''),
                     items: items
                 });
-                console.log(history);
             }
 
         }
